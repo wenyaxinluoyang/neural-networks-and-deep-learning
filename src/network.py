@@ -1,13 +1,7 @@
 import numpy as np
 import random
 import data_util
-
-
-# 使用我们的网络来分类数字
-# 激活函数
-def sigmoid(z):
-    return 1.0 / (1.0 + np.exp(-z))  # sigmoid = 1/(1+e^-z)
-    # 当z是一个向量或是一个numpy数组时，numpy自动地按元素应用sigmoid函数
+from activation_function import *
 
 
 class Network(object):
@@ -22,7 +16,7 @@ class Network(object):
     def feedforward(self, a):
         # 对于网络给定一个输入a，返回对应的输出
         for b, w in zip(self.biases, self.weights):
-            a = sigmoid(np.dot(w, a) + b)
+            a = SigmoidFun.fn(np.dot(w, a) + b)
         # w为matrix(j,i) w是j行i列的矩阵，j代表后一行的神经元个数，i代表前一行的神经元个数
         # a为matrix(i,1) a是i行1列的列向量，是输入向量
         return a
@@ -87,19 +81,19 @@ class Network(object):
             temp = np.dot(w, activation)  # w*a
             z = temp + b  # 求某层的输出,同时是下层的输入, z = w*a + b
             zs.append(z)
-            activation = sigmoid(z)  # 该层输出 output = sigmoid(z)
+            activation = SigmoidFun.fn(z)  # 该层输出 output = sigmoid(z)
             activations.append(activation)  # 添加该层输出作为下一层的输入
 
         # 反向传播算法
         # C = 1／2*(y-a)^2   ∂C/∂z = (∂C/∂a) * (∂C/∂z) = (a-y)*sigmoid_prime(z)
         # 计算z的误差
-        delta = self.cost_derivative(activations[-1], y) * sigmoid_prime(zs[-1])
+        delta = self.cost_derivative(activations[-1], y) * SigmoidFun.fn_prime(zs[-1])
         # ∂C/∂b = ∂C/∂z  所以b的误差与c的误差相同
         nabla_b[-1] = delta
         nabla_w[-1] = np.dot(delta, activations[-2].transpose())  # 计算wjk的调整
         for l in range(2, self.num_layers):
             z = zs[-l]
-            sp = sigmoid_prime(z)
+            sp = SigmoidFun.fn_prime(z)
             delta = np.dot(self.weights[-l + 1].transpose(), delta) * sp  # 第l层的误差可以用第l+1层的误差求得
             nabla_b[-l] = delta
             nabla_w[-l] = np.dot(delta, activations[-l - 1].transpose())
@@ -129,11 +123,6 @@ sigmoid(x)的导数 = d/dx
 
 sigmoid_prime函数对sigmoid函数进行求导
 '''
-
-
-def sigmoid_prime(z):
-    """Derivative of the sigmoid function."""
-    return sigmoid(z) * (1 - sigmoid(z))
 
 
 # 使用一个三层神经网络来识别单个数字

@@ -7,34 +7,11 @@ import random
 import sys
 import numpy as np
 import data_util
+from cost_function import *
+from activation_function import *
 
-def sigmoid(z):
-    return 1/(1 + np.exp(-z))
 
-# sigmoid 函数的导数
-def sigmoid_prime(z):
-    return sigmoid(z)*(1-sigmoid(z))
 
-# 定义代价函数
-# 二次代价函数 Cost = 1/2[(a-y)*(a-y)]
-class QuadraticCost(object):
-    @staticmethod
-    def fn(a, y):
-        return 0.5*np.linalg.norm(a-y)**2
-
-    @staticmethod
-    def delta(z, a, y):
-        return (a-y)*sigmoid_prime(z)
-
-# 以交叉墒作为代价函数
-class CrossEntropyCost(object):
-    @staticmethod
-    def fn(a,y):
-        return np.sum(np.nan_to_num(-y*np.log(a) - (1-y)*np.log(1-a)))
-
-    @staticmethod
-    def delta(z, a, y):
-        return (a-y)
 
 class Network(object):
     def __init__(self, sizes, cost=CrossEntropyCost):
@@ -62,7 +39,7 @@ class Network(object):
         for b,w in zip(self.biases, self.weights):
             z = np.dot(w, a) + b
             zs.append(z)
-            a = sigmoid(z)
+            a = SigmoidFun.fn(z)
             activations.append(a)
         return activations, zs
 
@@ -129,7 +106,7 @@ class Network(object):
         nabla_w[-1] = np.dot(delta, activations[-2].transpose())
         for l in range(2, self.num_layers):
             z = zs[-l]
-            sp = sigmoid_prime(z)
+            sp = SigmoidFun.fn_prime(z)
             delta = np.dot(self.weights[-l+1].transpose(), delta)*sp
             nabla_b[-l] = delta
             nabla_w[-l] = np.dot(delta, activations[-l-1].transpose())
@@ -180,7 +157,7 @@ if __name__ == '__main__':
         x = x.reshape((784, 1))
         vali_data.append((x, y))
 
-    net = Network([784, 30, 10], cost=CrossEntropyCost)
+    net = Network([784, 100, 10], cost=CrossEntropyCost)
     net.large_weight_initializer()
     train_cost, train_accuracy, evaluation_cost, evaluation_accuracy = net.SGD(train_data, 30, 10 ,1, evaluation_data=test_data,
     monitor_training_cost=True, monitor_training_accuracy=True, monitor_evaluation_cost=True, monitor_evaluation_accuracy=True)
@@ -190,6 +167,11 @@ if __name__ == '__main__':
     print('=========')
     for cost, accuracy in zip(evaluation_cost, evaluation_accuracy):
         print('测试集=== cost:', cost, ' accuracy:', accuracy)
+
+    # 30个隐藏神经元 train_accuracy=0.99  test_accuracy=0.87
+    # 40个隐藏神经元 train_accuracy=0.99  test_accuracy=0.89
+    # 50个隐藏神经元 train_accuracy=0.99  test_accuracy=0.89
+    # 100个隐藏神经元 train_accuracy=0.99 test_accuracy=0.90
 
 
 
