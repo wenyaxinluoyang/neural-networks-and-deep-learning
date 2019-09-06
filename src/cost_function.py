@@ -25,5 +25,16 @@ class CrossEntropyCost(object):
         return (a-y)
 
 
+# 对数似然代价函数
+class Log_LikelihoodCost(object):
+    @staticmethod
+    def fn(a,y):
+        return -np.log(a) # cost = -ln[a(L,y)]
+
+    @staticmethod
+    def delta(z, a, y):
+        return (a-y)
+
+
 
 

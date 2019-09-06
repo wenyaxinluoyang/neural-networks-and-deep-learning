@@ -68,17 +68,18 @@ class DataUtils(object):
             plt.savefig(self._outpath + '/' + outfile)
 
 
-def get_data():
+def get_data(train_vs_test=0.3):
     trainfile_x = '../dataset/t10k-images-idx3-ubyte'
     trainfile_y = '../dataset/t10k-labels-idx1-ubyte'
     testfile_x = '../dataset/train-images-idx3-ubyte'
     testfile_y = '../dataset/train-labels-idx1-ubyte'
     data_x = DataUtils(filename=trainfile_x).getImage()
     data_y = DataUtils(filename=trainfile_y).getLabel()
-    test_x = data_x[0:3000, :]
-    test_y = data_y[0:3000]
-    train_x = data_x[3000:, :]
-    train_y = data_y[3000:]
+    test_size = int(train_vs_test*len(data_x))
+    test_x = data_x[0:test_size, :]
+    test_y = data_y[0:test_size]
+    train_x = data_x[test_size:, :]
+    train_y = data_y[test_size:]
     vali_x = DataUtils(filename=testfile_x).getImage()
     vali_y = DataUtils(filename=testfile_y).getLabel()
     train_data = []

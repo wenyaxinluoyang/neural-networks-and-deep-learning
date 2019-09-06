@@ -9,6 +9,7 @@ import numpy as np
 import data_util
 from cost_function import *
 from activation_function import *
+from draw.draw_pic import *
 
 
 
@@ -84,7 +85,7 @@ class Network(object):
             delta_nabla_b, delta_nabla_w = self.backprop(x, y)
             nabla_b = [nb + dnb for nb, dnb in zip(nabla_b, delta_nabla_b)]
             nabla_w = [nw + dnw for nw, dnw in zip(nabla_w, delta_nabla_w)]
-        self.weights = [(1-eta*(lmbda*n))*w - (eta/len(mini_batch))*nw for w, nw in zip(self.weights, nabla_w)]
+        self.weights = [(1-eta*(lmbda/n))*w - (eta/len(mini_batch))*nw for w, nw in zip(self.weights, nabla_w)]
         self.biases = [b-(eta/len(mini_batch))*nb for b,nb in zip(self.biases, nabla_b)]
 
 
@@ -136,13 +137,16 @@ def vectorized_result(y):
     v[y] = 1
     return v
 
-
-if __name__ == '__main__':
+def test_one():
     train_data, test_data, vali_data = data_util.get_data()
     net = Network([784, 100, 10], cost=CrossEntropyCost)
     net.large_weight_initializer()
-    train_cost, train_accuracy, evaluation_cost, evaluation_accuracy = net.SGD(train_data, 30, 10 ,1, evaluation_data=test_data,
-    monitor_training_cost=True, monitor_training_accuracy=True, monitor_evaluation_cost=True, monitor_evaluation_accuracy=True)
+    train_cost, train_accuracy, evaluation_cost, evaluation_accuracy = net.SGD(train_data, 30, 10, 1,
+                                                                               evaluation_data=test_data,
+                                                                               monitor_training_cost=True,
+                                                                               monitor_training_accuracy=True,
+                                                                               monitor_evaluation_cost=True,
+                                                                               monitor_evaluation_accuracy=True)
     print('=========')
     for cost, accuracy in zip(train_cost, train_accuracy):
         print('训练集=== cost:', cost, ' accuracy:', accuracy)
@@ -154,6 +158,39 @@ if __name__ == '__main__':
     # 40个隐藏神经元 train_accuracy=0.99  test_accuracy=0.89
     # 50个隐藏神经元 train_accuracy=0.99  test_accuracy=0.89
     # 100个隐藏神经元 train_accuracy=0.99 test_accuracy=0.90
+
+def test_two():
+    # 考虑过拟合问题
+    train_data, test_data, vali_data = data_util.get_data(0.9)
+    net = Network([784, 30, 10], cost=CrossEntropyCost)
+    net.large_weight_initializer()
+    net.SGD(train_data, 400, 10, 0.5, evaluation_data=test_data,monitor_training_accuracy=True,
+            monitor_training_cost=True, monitor_evaluation_accuracy=True, monitor_evaluation_cost=True)
+
+
+# 使用规范化，防止过拟合问题
+def test_three():
+    train_data, test_data, vali_data = data_util.get_data()
+    net = Network([784, 30, 10], cost=CrossEntropyCost)
+    net.large_weight_initializer()
+    train_cost, train_accuracy, evaluation_cost, evaluation_accuracy = net.SGD(train_data, 30, 10, 0.5, lmbda=5, evaluation_data=test_data,monitor_training_accuracy=True,
+            monitor_training_cost=True, monitor_evaluation_accuracy=True, monitor_evaluation_cost=True)
+    # 绘制训练集测试集代价函数曲线
+    train_round = [x for x in range(len(train_cost))]
+    evaluation_round = [x for x in range(len(evaluation_cost))]
+    draw_accuracy(train_round, train_accuracy, evaluation_round, evaluation_accuracy)
+    draw_cost(train_round, train_cost, evaluation_round, evaluation_cost)
+
+
+
+
+if __name__ == '__main__':
+    test_three()
+
+
+
+
+
 
 
 
