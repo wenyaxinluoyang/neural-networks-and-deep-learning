@@ -138,25 +138,7 @@ def vectorized_result(y):
 
 
 if __name__ == '__main__':
-    train_x, train_y, test_x, test_y, vali_x, vali_y = data_util.get_data()
-    train_data = []
-    test_data = []
-    vali_data = []
-    for x, y in zip(train_x, train_y):
-        x = x.reshape((784, 1))
-        num = y
-        y = np.zeros((10, 1))
-        y[num] = 1
-        train_data.append((x, y))
-
-    for x, y in zip(test_x, test_y):
-        x = x.reshape((784, 1))
-        test_data.append((x, y))
-
-    for x, y in zip(vali_x, vali_y):
-        x = x.reshape((784, 1))
-        vali_data.append((x, y))
-
+    train_data, test_data, vali_data = data_util.get_data()
     net = Network([784, 100, 10], cost=CrossEntropyCost)
     net.large_weight_initializer()
     train_cost, train_accuracy, evaluation_cost, evaluation_accuracy = net.SGD(train_data, 30, 10 ,1, evaluation_data=test_data,

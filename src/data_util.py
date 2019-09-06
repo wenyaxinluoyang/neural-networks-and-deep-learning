@@ -81,7 +81,22 @@ def get_data():
     train_y = data_y[3000:]
     vali_x = DataUtils(filename=testfile_x).getImage()
     vali_y = DataUtils(filename=testfile_y).getLabel()
-    return train_x, train_y, test_x, test_y, vali_x, vali_y
+    train_data = []
+    test_data = []
+    vali_data = []
+    for x, y in zip(train_x, train_y):
+        x = x.reshape((784, 1))
+        num = y
+        y = np.zeros((10, 1))
+        y[num] = 1
+        train_data.append((x, y))
+    for x, y in zip(test_x, test_y):
+        x = x.reshape((784, 1))
+        test_data.append((x, y))
+    for x, y in zip(vali_x, vali_y):
+        x = x.reshape((784, 1))
+        vali_data.append((x, y))
+    return train_data, test_data, vali_data
 
 
 if __name__ == '__main__':

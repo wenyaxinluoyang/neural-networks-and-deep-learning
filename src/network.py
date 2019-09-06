@@ -127,24 +127,7 @@ sigmoid_prime函数对sigmoid函数进行求导
 
 # 使用一个三层神经网络来识别单个数字
 if __name__ == '__main__':
-    train_x, train_y, test_x, test_y, vali_x, vali_y = data_util.get_data()
-    train_data = []
-    test_data = []
-    vali_data = []
-    for x, y in zip(train_x, train_y):
-        x = x.reshape((784, 1))
-        num = y
-        y = np.zeros((10, 1))
-        y[num] = 1
-        train_data.append((x, y))
-
-    for x, y in zip(test_x, test_y):
-        x = x.reshape((784, 1))
-        test_data.append((x, y))
-
-    for x, y in zip(vali_x, vali_y):
-        x = x.reshape((784, 1))
-        vali_data.append((x, y))
+    train_data, test_data, vali_data = data_util.get_data()
     net = Network([784, 30, 10])
     # 学习超过30次迭代期, 小批量数据大小为10，学习速率3.0
     net.SGD(train_data, 40, 10, 1, test_data=test_data)
@@ -155,7 +138,7 @@ if __name__ == '__main__':
     # 隐藏层节点30,迭代期40,学习速率2,正确率(平均)0.834
     # 隐藏层节点20,正确率(平均)0.81
     # 隐藏层节点20,学习速率4,正确率0.80
-    # 隐藏层节点30,迭代期40,学习速率1,正确率(平均)0.88
+    # 隐藏层节点30,迭代期40,学习速率1,正确率(平均)0.89
 
 
 
